@@ -108,7 +108,6 @@ class MeetingDataSource extends CalendarDataSource {
     return appointments![index].eventName;
   }
 
-  @override
   Color getColor(int index) {
     return appointments![index].background;
   }
