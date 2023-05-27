@@ -18,44 +18,53 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late SfCalendar _calendar;
+  late CalendarController _calendarController;
   CalendarView _calendarView = CalendarView.day;
+
+  List<DateTime> _startTimes = [
+    DateTime(2023, 5, 12, 9, 0, 0),
+    DateTime(2023, 5, 12, 11, 0, 0),
+    DateTime(2023, 5, 12, 13, 0, 0),
+    DateTime(2023, 5, 12, 15, 0, 0),
+  ];
+
+  List<DateTime> _endTimes = [
+    DateTime(2023, 5, 12, 11, 0, 0),
+    DateTime(2023, 5, 12, 13, 0, 0),
+    DateTime(2023, 5, 12, 15, 0, 0),
+    DateTime(2023, 5, 12, 17, 0, 0),
+  ];
+
+  List<String> _courses = [
+    'Artificial Intelligence',
+    'Data structure and algorithm',
+    'Data Science',
+    'Database',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _calendar = SfCalendar(
-      view: _calendarView,
-      showCurrentTimeIndicator: true,
-      dataSource: MeetingDataSource(_getDataSource()),
-      monthViewSettings: MonthViewSettings(
-        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-      ),
-    );
+    _calendarController = CalendarController();
   }
 
   List<Meeting> _getDataSource() {
     final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting('Makeup class of AI', startTime, endTime,
-        Color.fromARGB(255, 15, 130, 134), false));
+    for (int i = 0; i < _startTimes.length; i++) {
+      meetings.add(Meeting(
+        _courses[i],
+        _startTimes[i],
+        _endTimes[i],
+        Color.fromARGB(255, i * 50, 255 - i * 50, 0),
+        false,
+      ));
+    }
     return meetings;
   }
 
-  void _onPopupMenuItemSelected(CalendarView view) {
+  void _onPopupMenuItemSelected(CalendarView value) {
     setState(() {
-      _calendarView = view;
-      _calendar = SfCalendar(
-        view: _calendarView,
-        showCurrentTimeIndicator: true,
-        dataSource: MeetingDataSource(_getDataSource()),
-        monthViewSettings: MonthViewSettings(
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-        ),
-      );
+      _calendarView = value;
     });
   }
 
@@ -81,8 +90,11 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
       ),
-      body: Container(
-        child: _calendar,
+      body: SfCalendar(
+        view: _calendarView,
+        controller: _calendarController,
+        dataSource: MeetingDataSource(_getDataSource()),
+        initialDisplayDate: DateTime.now(),
       ),
     );
   }
